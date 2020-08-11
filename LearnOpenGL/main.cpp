@@ -1,16 +1,31 @@
 #include <windows.h>   
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <iostream>
-#include <glm/glm.hpp>
+
+// GLEW
+#define GLEW_STATIC
+#include <GL/glew.h>
+
+// GLFW
+#include <GLFW/glfw3.h>
+
+//// GLAD
+//#include <glad/glad.h>
+
+// Other includes
+#include "Shader.h"
 #include <glm/gtc/constants.hpp> // glm::pi
 
+//窗口大小变化回调函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+
+// 按键回调函数
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
 std::string string_To_UTF8(const std::string& str);
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int WIDTH = 800;
+const unsigned int HEIGHT = 600;
 
 //顶点着色器
 const char* vertexShaderSource = "#version 330 core\n"
@@ -24,12 +39,13 @@ const char* vertexShaderSource = "#version 330 core\n"
 "}\0";
 //片元着色器
 const char* fragmentShaderSource = "#version 330 core\n"
+"in vec3 ourColor;\n"
 "out vec4 FragColor;\n"
-"uniform vec4 ourColor; // 在OpenGL程序代码中设定这个变量\n"
+//"uniform vec4 ourColor; // 在OpenGL程序代码中设定这个变量\n"
 "void main()\n"
 "{\n"
 //"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"   FragColor = ourColor;\n"
+"   FragColor = vec4(ourColor,1.0f);\n"
 "}\n\0";
 
 
@@ -52,52 +68,28 @@ int main(int argc, char* argv[])
     }
     glfwMakeContextCurrent(window);
 
-    //初始化GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+	// 设置按键回调函数
+	glfwSetKeyCallback(window, key_callback);
+	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
+	glewExperimental = GL_TRUE;
+	// Initialize GLEW to setup the OpenGL Function pointers
+	glewInit();
+
+	// Define the viewport dimensions
+	glViewport(0, 0, WIDTH, HEIGHT);
+    ////初始化GLAD
+    //if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    //{
+    //    std::cout << "Failed to initialize GLAD" << std::endl;
+    //    return -1;
+    //}
 
     // 编译并编译我们的着色器程序
     // ------------------------------------
-    // 顶点着色器
-    int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // 检查顶点着色器编译错误
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // 片元着色器
-    int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // 检查片元着色器编译错误
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    //连接两个着色器
-    int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // 检查着色器连接错误
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+
+	// Build and compile our shader program
+	Shader ourShader("./shaders/sincolor.vs", "./shaders/sincolor.frag");
+
 
     // 设置顶点数据（和缓冲区）并配置顶点属性
     // ------------------------------------------------------------------
@@ -108,9 +100,13 @@ int main(int argc, char* argv[])
         -0.5f,  0.5f, 0.0f   // top left 
     };
 	float verangle[] = {
-		 0.0f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
+		// 0.0f,  0.5f, 0.0f,  // top right
+		// 0.5f, -0.5f, 0.0f,  // bottom right
+		//-0.5f, -0.5f, 0.0f,  // bottom left
+		 // 位置              // 颜色
+	    0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
+	    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
+	     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
 	};
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
@@ -143,10 +139,13 @@ int main(int argc, char* argv[])
     *一旦我们有更多的顶点属性，我们就必须更小心地定义每个顶点属性之间的间隔，我们在后面会看到更多的例子（译注: 这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节）。
     *6.最后一个参数的类型是void*，所以需要我们进行这个奇怪的强制类型转换。它表示位置数据在缓冲中起始位置的偏移量(Offset)。由于位置数据在数组的开头，所以这里是0。我们会在后面详细解释这个参数。
     */
+    // 位置属性
     // 1. 设置顶点属性指针
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
+	// 颜色属性
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
     // 请注意，这是允许的，对glVertexAttribPointer的调用将VBO注册为顶点属性的绑定顶点缓冲区对象，因此之后我们可以安全地解除绑定
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -174,7 +173,8 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         // 激活着色器
-        glUseProgram(shaderProgram);
+        //glUseProgram(shaderProgram);
+        ourShader.Use();
 
 		// 更新uniform颜色
 		GLfloat timeValue = glfwGetTime();
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
         GLfloat redValue = (sin(timeValue + m_pi * 2 / 3));
         GLfloat blueValue = (sin(timeValue + m_pi * 4 / 3));
         //通过uniform 设置颜色
-		GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		GLint vertexColorLocation = glGetUniformLocation(ourShader.Program, "ourColor");
 		glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
         // 绘制三角形
         // 2. 当我们渲染一个物体时要使用着色器程序
@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
+    //glDeleteProgram(shaderProgram);
 
     // glfw: 终止，清除所有先前分配的GLFW资源
     // ----------------------------------------------------------------------------------
@@ -252,4 +252,12 @@ std::string string_To_UTF8(const std::string& str)
     pBuf = NULL;
 
     return retStr;
+}
+
+// Is called whenever a key is pressed/released via GLFW
+//按键加测 exc退出程序
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
