@@ -23,7 +23,7 @@ void processInput(GLFWwindow* window);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 std::string string_To_UTF8(const std::string& str);
-// settings
+// 窗口默认大小设置
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
 
