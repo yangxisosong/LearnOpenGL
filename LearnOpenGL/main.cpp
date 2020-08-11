@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp> // glm::pi
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -13,23 +15,23 @@ const unsigned int SCR_HEIGHT = 600;
 //顶点着色器
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 color;\n"
+"out vec3 ourColor;\n"
 "void main()\n"
 "{\n"
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   ourColor = color;\n"
 "}\0";
 //片元着色器
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor; // 在OpenGL程序代码中设定这个变量\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+//"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
 
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-};
 
 int main(int argc, char* argv[])
 {
@@ -105,10 +107,18 @@ int main(int argc, char* argv[])
         -0.5f, -0.5f, 0.0f,  // bottom left
         -0.5f,  0.5f, 0.0f   // top left 
     };
+	float verangle[] = {
+		 0.0f,  0.5f, 0.0f,  // top right
+		 0.5f, -0.5f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f,  // bottom left
+	};
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
     };
+	unsigned int indicesangle[] = {  // note that we start from 0!
+	   0, 1, 2,  // first Triangle
+	};
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -117,10 +127,10 @@ int main(int argc, char* argv[])
     glBindVertexArray(VAO);
     //0. 复制顶点数组到缓冲中供OpenGL使用
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verangle), verangle, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesangle), indicesangle, GL_STATIC_DRAW);
     /*
     * glVertexAttribPointer 参数说明
     *1.第一个参数指定我们要配置的顶点属性。还记得我们在顶点着色器中使用layout(location = 0)定义了position顶点属性的位置值(Location)吗？它可以把顶点属性的位置值设置为0。
@@ -148,7 +158,7 @@ int main(int argc, char* argv[])
     glBindVertexArray(0);
 
     // 开启线框模式.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // 渲染循环
     // -----------
@@ -163,10 +173,20 @@ int main(int argc, char* argv[])
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // 激活着色器
+        glUseProgram(shaderProgram);
 
+		// 更新uniform颜色
+		GLfloat timeValue = glfwGetTime();
+        auto m_pi= glm::pi<float>();
+        GLfloat greenValue = (sin(timeValue));
+        GLfloat redValue = (sin(timeValue + m_pi * 2 / 3));
+        GLfloat blueValue = (sin(timeValue + m_pi * 4 / 3));
+        //通过uniform 设置颜色
+		GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
         // 绘制三角形
         // 2. 当我们渲染一个物体时要使用着色器程序
-        glUseProgram(shaderProgram);
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
