@@ -27,28 +27,6 @@ std::string string_To_UTF8(const std::string& str);
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
 
-//顶点着色器
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 color;\n"
-"out vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"   ourColor = color;\n"
-"}\0";
-//片元着色器
-const char* fragmentShaderSource = "#version 330 core\n"
-"in vec3 ourColor;\n"
-"out vec4 FragColor;\n"
-//"uniform vec4 ourColor; // 在OpenGL程序代码中设定这个变量\n"
-"void main()\n"
-"{\n"
-//"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"   FragColor = vec4(ourColor,1.0f);\n"
-"}\n\0";
-
-
 int main(int argc, char* argv[])
 {
     //初始化窗口
