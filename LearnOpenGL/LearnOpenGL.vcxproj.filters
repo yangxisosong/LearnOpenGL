@@ -73,5 +73,17 @@
     <None Include="shaders\texure.vs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="shaders\defaultlight.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\defaultlight.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\light.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\light.frag">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

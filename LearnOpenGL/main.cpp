@@ -91,7 +91,7 @@ GLfloat vertices[] = {
 };
 glm::vec3 cubePositions[] = {
 glm::vec3(0.0f,  0.0f,  0.0f),
-glm::vec3(2.0f,  5.0f, -15.0f),
+glm::vec3(2.0f,  0.0f, -5.0f),
 glm::vec3(-1.5f, -2.2f, -2.5f),
 glm::vec3(-3.8f, -2.0f, -12.3f),
 glm::vec3(2.4f, -0.4f, -3.5f),
@@ -100,6 +100,50 @@ glm::vec3(1.3f, -2.0f, -2.5f),
 glm::vec3(1.5f,  2.0f, -2.5f),
 glm::vec3(1.5f,  0.2f, -1.5f),
 glm::vec3(-1.3f,  1.0f, -1.5f) };
+
+GLfloat verticesbox[] = {
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f
+};
 #pragma endregion
 
 struct MouseDown
@@ -152,7 +196,8 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// 加载和编译我们的着色器
-	Shader ourShader("./shaders/position3d.vs", "./shaders/position3d.frag");
+	Shader ourShader("./shaders/defaultlight.vs", "./shaders/defaultlight.frag");
+	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
 
 	GLuint VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -173,8 +218,21 @@ int main()
 	// TexCoord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
-
 	glBindVertexArray(0); // Unbind VAO
+
+	GLuint lightVAO, lightVBO;
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &lightVBO);
+	glBindVertexArray(lightVAO);
+	// We only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need.
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesbox), verticesbox, GL_STATIC_DRAW);
+	// Set the vertex attributes (only position data for the lamp))
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
+
 
 	// Load and create a texture 
 	GLuint texture1;
@@ -203,19 +261,24 @@ int main()
 		ourShader.Use();
 
 		// 绑定贴图
-		glActiveTexture(GL_TEXTURE0);
+	/*	glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);*/
+
+		GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
+		GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
+		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);// 我们所熟悉的珊瑚红
+		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f); // 依旧把光源设置为白色
 
 		// mvp 矩阵计算
 		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::mat4(1.0f);
 		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		//view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 		projection = glm::perspective(camera.Zoom, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 		GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
 		GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
@@ -228,17 +291,40 @@ int main()
 
 		// render container
 		glBindVertexArray(VAO);
-		for (GLuint i = 0; i < 10; i++)
+		for (GLuint i = 0; i < 1; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			GLfloat angle = 20.0f * i;
-			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+			//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		glBindVertexArray(0);
+
+
+		lightingShader.Use();
+	
+
+		glm::mat4 lightview = camera.GetViewMatrix();
+		glm::mat4 lightprojection = glm::mat4(1.0f);
+		lightprojection = glm::perspective(camera.Zoom, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+		GLint LightmodelLoc = glGetUniformLocation(lightingShader.Program, "model");
+		GLint LightviewLoc = glGetUniformLocation(lightingShader.Program, "view");
+		GLint LightprojLoc = glGetUniformLocation(lightingShader.Program, "projection");
+		// Pass the matrices to the shader
+		glUniformMatrix4fv(LightviewLoc, 1, GL_FALSE, glm::value_ptr(lightview));
+		glUniformMatrix4fv(LightprojLoc, 1, GL_FALSE, glm::value_ptr(lightprojection));
+
+		// Draw the container (using container's vertex attributes)
+		glBindVertexArray(lightVAO);
+		glm::mat4 lightmodel = glm::mat4(1.0f);
+		lightmodel = glm::translate(lightmodel, glm::vec3(1.2f, 1.0f, 2.0f));
+		lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
+		glUniformMatrix4fv(LightmodelLoc, 1, GL_FALSE, glm::value_ptr(lightmodel));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -249,6 +335,9 @@ int main()
 	//取消分配所有资源
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+
+	glDeleteVertexArrays(1, &lightVAO);
+	glDeleteBuffers(1, &lightVBO);
 	glfwTerminate();
 	return 0;
 }

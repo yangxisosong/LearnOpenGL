@@ -164,6 +164,10 @@
   <ItemGroup>
     <None Include="shaders\default.frag" />
     <None Include="shaders\default.vs" />
+    <None Include="shaders\defaultlight.frag" />
+    <None Include="shaders\defaultlight.vs" />
+    <None Include="shaders\light.frag" />
+    <None Include="shaders\light.vs" />
     <None Include="shaders\position3d.frag" />
     <None Include="shaders\position3d.vs" />
     <None Include="shaders\sincolor.frag" />
