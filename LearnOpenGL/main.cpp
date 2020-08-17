@@ -293,7 +293,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
 		mouseState.Left = action;
-		if (!mods)
+		if (!action)
 		{
 			firstMouse = true;
 		}
@@ -303,12 +303,17 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
 		mouseState.Right = action;
+		if (!action)
+		{
+			firstMouse = true;
+		}
 		break;
 	default:
 		return;
 	}
 }
 // 鼠标移动回调函数
+glm::vec3 cameraPos;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (mouseState.Left)
@@ -327,6 +332,28 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = ypos;
 
 		camera.ProcessMouseMovement(xoffset, yoffset);
+	}
+	else if (mouseState.Right)
+	{
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+			cameraPos = camera.cameraPos;
+		}
+
+		GLfloat xoffset = xpos - lastX;
+		GLfloat yoffset = lastY - ypos;
+
+		lastX = xpos;
+		lastY = ypos;
+		
+		/*glm::vec3 newpos =
+			glm::vec3(camera.cameraPos.x - xoffset* deltaTime, camera.cameraPos.y - yoffset* deltaTime, camera.cameraPos.z);
+		camera.cameraPos = newpos;*/
+		camera.cameraPos -= camera.cameraUp * yoffset * deltaTime * 2.0f;
+		camera.cameraPos -= camera.cameraRight * xoffset * deltaTime * 2.0f;
 	}
 }
 
