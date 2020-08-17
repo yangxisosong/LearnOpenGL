@@ -1,5 +1,6 @@
-#include <windows.h>   
-#include <iostream>
+// Std. Includes
+#include <string>
+#include <windows.h> 
 
 // GLEW
 #define GLEW_STATIC
@@ -8,234 +9,357 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
-//// GLAD
-//#include <glad/glad.h>
-
-// Other includes
+// GL includes
 #include "Shader.h"
-#include <glm/gtc/constants.hpp> // glm::pi
+#include "Camera.h"
 
-//窗口大小变化回调函数
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+// GLM Mathemtics
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-// 按键回调函数
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+// Other Libs
+#include <SOIL.h>
+#include "TexureManage.h"
+
+// Properties
+GLuint screenWidth = 800, screenHeight = 600;
+// Window dimensions
+const GLuint WIDTH = 800, HEIGHT = 600;
 
 std::string string_To_UTF8(const std::string& str);
-// 窗口默认大小设置
-const unsigned int WIDTH = 800;
-const unsigned int HEIGHT = 600;
+// Function prototypes
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void Do_Movement();
 
-int main(int argc, char* argv[])
+// Camera
+Camera camera;
+bool keys[1024];
+GLfloat lastX = 400, lastY = 300;
+bool firstMouse = true;
+
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
+
+#pragma region PositionDate 
+// Set up vertex data (and buffer(s)) and attribute pointers
+GLfloat vertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+};
+glm::vec3 cubePositions[] = {
+glm::vec3(0.0f,  0.0f,  0.0f),
+glm::vec3(2.0f,  5.0f, -15.0f),
+glm::vec3(-1.5f, -2.2f, -2.5f),
+glm::vec3(-3.8f, -2.0f, -12.3f),
+glm::vec3(2.4f, -0.4f, -3.5f),
+glm::vec3(-1.7f,  3.0f, -7.5f),
+glm::vec3(1.3f, -2.0f, -2.5f),
+glm::vec3(1.5f,  2.0f, -2.5f),
+glm::vec3(1.5f,  0.2f, -1.5f),
+glm::vec3(-1.3f,  1.0f, -1.5f) };
+#pragma endregion
+
+struct MouseDown
 {
-    //初始化窗口
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	bool Left;
+	bool Middle;
+	bool Right;
+};
+MouseDown mouseState{ false,false,false };
 
-    //创建窗口（设置窗口大小）
-    std::string title = string_To_UTF8("LearnOpenGL测试");
-    GLFWwindow* window = glfwCreateWindow(800, 600, title.c_str(), NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
+int main()
+{
+	// 初始化glfw
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//设置glfw 能否改变窗口大小
+	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	// 设置按键回调函数
+	std::string title = string_To_UTF8("LearnOpenGL测试");
+	GLFWwindow* window = glfwCreateWindow(800, 600, title.c_str(), NULL, NULL);
+	if (window == NULL)
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	// 设置回调函数
 	glfwSetKeyCallback(window, key_callback);
-	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+
+	// Options 是否显示鼠标指针
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// 初始化GLEW 设置OpenGL函数指针。
 	glewExperimental = GL_TRUE;
-	// Initialize GLEW to setup the OpenGL Function pointers
 	glewInit();
 
-	// Define the viewport dimensions
-	glViewport(0, 0, WIDTH, HEIGHT);
-    ////初始化GLAD
-    //if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    //{
-    //    std::cout << "Failed to initialize GLAD" << std::endl;
-    //    return -1;
-    //}
+	// 定义视口尺寸
+	glViewport(0, 0, screenWidth, screenHeight);
 
-    // 编译并编译我们的着色器程序
-    // ------------------------------------
+	// 设置一些OpenGL的选项
+	//开启深度检测
+	glEnable(GL_DEPTH_TEST);
 
-	// Build and compile our shader program
-	Shader ourShader("./shaders/sincolor.vs", "./shaders/sincolor.frag");
+	// 加载和编译我们的着色器
+	Shader ourShader("./shaders/position3d.vs", "./shaders/position3d.frag");
 
+	GLuint VBO, VAO, EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
 
-    // 设置顶点数据（和缓冲区）并配置顶点属性
-    // ------------------------------------------------------------------
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-	float verangle[] = {
-		// 0.0f,  0.5f, 0.0f,  // top right
-		// 0.5f, -0.5f, 0.0f,  // bottom right
-		//-0.5f, -0.5f, 0.0f,  // bottom left
-		 // 位置              // 颜色
-	    0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-	    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-	     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
-	};
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
-	unsigned int indicesangle[] = {  // note that we start from 0!
-	   0, 1, 2,  // first Triangle
-	};
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    //首先绑定顶点数组对象，然后绑定并设置顶点缓冲区，然后配置顶点属性。
-    glBindVertexArray(VAO);
-    //0. 复制顶点数组到缓冲中供OpenGL使用
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verangle), verangle, GL_STATIC_DRAW);
+	glBindVertexArray(VAO);
+	//glGenBuffers(1, &EBO);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesangle), indicesangle, GL_STATIC_DRAW);
-    /*
-    * glVertexAttribPointer 参数说明
-    *1.第一个参数指定我们要配置的顶点属性。还记得我们在顶点着色器中使用layout(location = 0)定义了position顶点属性的位置值(Location)吗？它可以把顶点属性的位置值设置为0。
-    *因为我们希望把数据传递到这一个顶点属性中，所以这里我们传入0。
-    *2.第二个参数指定顶点属性的大小。顶点属性是一个vec3，它由3个值组成，所以大小是3。
-    *3.第三个参数指定数据的类型，这里是GL_FLOAT(GLSL中vec*都是由浮点数值组成的)。
-    *4.第四个参数定义我们是否希望数据被标准化(Normalize)。如果我们设置为GL_TRUE，所有数据都会被映射到0（对于有符号型signed数据是-1）到1之间。我们把它设置为GL_FALSE。
-    *5.第五个参数叫做步长(Stride)，它告诉我们在连续的顶点属性组之间的间隔。由于下个组位置数据在3个float之后，
-    *我们把步长设置为3 * sizeof(float)。要注意的是由于我们知道这个数组是紧密排列的（在两个顶点属性之间没有空隙）我们也可以设置为0来让OpenGL决定具体步长是多少（只有当数值是紧密排列时才可用）。
-    *一旦我们有更多的顶点属性，我们就必须更小心地定义每个顶点属性之间的间隔，我们在后面会看到更多的例子（译注: 这个参数的意思简单说就是从这个属性第二次出现的地方到整个数组0位置之间有多少字节）。
-    *6.最后一个参数的类型是void*，所以需要我们进行这个奇怪的强制类型转换。它表示位置数据在缓冲中起始位置的偏移量(Offset)。由于位置数据在数组的开头，所以这里是0。我们会在后面详细解释这个参数。
-    */
-    // 位置属性
-    // 1. 设置顶点属性指针
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-	// 颜色属性
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-    // 请注意，这是允许的，对glVertexAttribPointer的调用将VBO注册为顶点属性的绑定顶点缓冲区对象，因此之后我们可以安全地解除绑定
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // 切记：当VAO处于活动状态时，请勿取消绑定EBO，因为绑定元素缓冲区对象存储在VAO中； 保持EBO约束.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // 您可以取消绑定VAO，这样其他VAO调用就不会意外修改此VAO，但这很少发生。 
-    //修改其他VAO无论如何都需要调用glBindVertexArray，因此通常在没有直接必要时，我们不会取消绑定VAO（也不绑定VBO）。
-    glBindVertexArray(0);
+	// Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	// TexCoord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 
-    // 开启线框模式.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glBindVertexArray(0); // Unbind VAO
 
-    // 渲染循环
-    // -----------
-    while (!glfwWindowShouldClose(window))
-    {
-        // 输入控制
-        // -----
-        processInput(window);
+	// Load and create a texture 
+	GLuint texture1;
+	GLuint texture2;
+	TexureManage texureMange;
+	texture1=texureMange.LoadTexure("./include/wall.jpg");
+	texture2 = texureMange.LoadTexure("./include/awesomeface.png");
 
-        // 渲染
-        // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+	// 渲染循环
+	while (!glfwWindowShouldClose(window))
+	{
+		// 计算每帧时间
+		GLfloat currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-        // 激活着色器
-        //glUseProgram(shaderProgram);
-        ourShader.Use();
+		// 检查和执行事件
+		glfwPollEvents();
+		Do_Movement();
 
-		// 更新uniform颜色
-		GLfloat timeValue = glfwGetTime();
-        auto m_pi= glm::pi<float>();
-        GLfloat greenValue = (sin(timeValue));
-        GLfloat redValue = (sin(timeValue + m_pi * 2 / 3));
-        GLfloat blueValue = (sin(timeValue + m_pi * 4 / 3));
-        //通过uniform 设置颜色
-		GLint vertexColorLocation = glGetUniformLocation(ourShader.Program, "ourColor");
-		glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
-        // 绘制三角形
-        // 2. 当我们渲染一个物体时要使用着色器程序
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0); // no need to unbind it every time 
+		// 清除colorbuffer
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // glfw: 交换缓冲区和轮询IO事件（按下/释放键，移动鼠标等）
-        // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-    // optional: 一旦资源用完了，就取消所有资源的分配:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    //glDeleteProgram(shaderProgram);
+		// Draw our first triangle
+		ourShader.Use();
 
-    // glfw: 终止，清除所有先前分配的GLFW资源
-    // ----------------------------------------------------------------------------------
-    glfwTerminate();
-    return 0;
+		// 绑定贴图
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
+
+		// mvp 矩阵计算
+		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::mat4(1.0f);
+		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		projection = glm::perspective(camera.Zoom, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+		GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
+		GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
+		GLint projLoc = glGetUniformLocation(ourShader.Program, "projection");
+		// Pass them to the shaders
+		//glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		// Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		// render container
+		glBindVertexArray(VAO);
+		for (GLuint i = 0; i < 10; i++)
+		{
+			// Calculate the model matrix for each object and pass it to shader before drawing
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			GLfloat angle = 20.0f * i;
+			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		glBindVertexArray(0);
+
+		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+		// -------------------------------------------------------------------------------
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+	//取消分配所有资源
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glfwTerminate();
+	return 0;
 }
 
-// 处理所有输入：查询GLFW是否在此帧中按下/释放了相关的按键并做出相应的反应
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+//每帧检测按键
+void Do_Movement()
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+	// Camera controls
+	if (keys[GLFW_KEY_W])
+		camera.ProcessKeyboard(Camera_Movement::FORWARD, deltaTime);
+	if (keys[GLFW_KEY_S])
+		camera.ProcessKeyboard(Camera_Movement::BACKWARD, deltaTime);
+	if (keys[GLFW_KEY_A])
+		camera.ProcessKeyboard(Camera_Movement::LEFT, deltaTime);
+	if (keys[GLFW_KEY_D])
+		camera.ProcessKeyboard(Camera_Movement::RIGHT, deltaTime);
 }
 
-// glfw：只要窗口大小更改（通过操作系统或用户调整大小），此回调函数就会执行
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+// 按键回调函数
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    // 确保视口与新窗口尺寸匹配； 请注意，宽度和高度将大大大于视网膜显示屏上指定的宽度和高度。
-    glViewport(0, 0, width, height);
+	//cout << key << endl;
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (key >= 0 && key < 1024)
+	{
+		if (action == GLFW_PRESS)
+			keys[key] = true;
+		else if (action == GLFW_RELEASE)
+			keys[key] = false;
+		//shift 加速移动
+		if (key == 340)
+		{
+			camera.MovementSpeed = action ? 2.5f : 1.0f;
+		}
+	}
+}
+//鼠标按键回调函数
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	switch (button)
+	{
+	case GLFW_MOUSE_BUTTON_LEFT:
+		mouseState.Left = action;
+		if (!mods)
+		{
+			firstMouse = true;
+		}
+		break;
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		mouseState.Middle = action;
+		break;
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		mouseState.Right = action;
+		break;
+	default:
+		return;
+	}
+}
+// 鼠标移动回调函数
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (mouseState.Left)
+	{
+		if (firstMouse)
+		{
+			lastX = xpos;
+			lastY = ypos;
+			firstMouse = false;
+		}
+
+		GLfloat xoffset = xpos - lastX;
+		GLfloat yoffset = lastY - ypos;
+
+		lastX = xpos;
+		lastY = ypos;
+
+		camera.ProcessMouseMovement(xoffset, yoffset);
+	}
+}
+
+//鼠标滚轮回调函数
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.ProcessMouseScroll(yoffset);
 }
 // string 转换为 UTF-8 编码
 // ---------------------------------------------------------------------------------------------
 std::string string_To_UTF8(const std::string& str)
 {
-    int nwLen = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
+	int nwLen = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
 
-    wchar_t* pwBuf = new wchar_t[nwLen + 1];//一定要加1，不然会出现尾巴 
-    ZeroMemory(pwBuf, nwLen * 2 + 2);
+	wchar_t* pwBuf = new wchar_t[nwLen + 1];//一定要加1，不然会出现尾巴 
+	ZeroMemory(pwBuf, nwLen * 2 + 2);
 
-    ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length(), pwBuf, nwLen);
+	::MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.length(), pwBuf, nwLen);
 
-    int nLen = ::WideCharToMultiByte(CP_UTF8, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
+	int nLen = ::WideCharToMultiByte(CP_UTF8, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
 
-    char* pBuf = new char[nLen + 1];
-    ZeroMemory(pBuf, nLen + 1);
+	char* pBuf = new char[nLen + 1];
+	ZeroMemory(pBuf, nLen + 1);
 
-    ::WideCharToMultiByte(CP_UTF8, 0, pwBuf, nwLen, pBuf, nLen, NULL, NULL);
+	::WideCharToMultiByte(CP_UTF8, 0, pwBuf, nwLen, pBuf, nLen, NULL, NULL);
 
-    std::string retStr(pBuf);
+	std::string retStr(pBuf);
 
-    delete[]pwBuf;
-    delete[]pBuf;
+	delete[]pwBuf;
+	delete[]pBuf;
 
-    pwBuf = NULL;
-    pBuf = NULL;
+	pwBuf = NULL;
+	pBuf = NULL;
 
-    return retStr;
-}
-
-// Is called whenever a key is pressed/released via GLFW
-//按键加测 exc退出程序
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+	return retStr;
 }

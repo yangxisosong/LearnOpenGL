@@ -24,10 +24,28 @@
     <ClCompile Include="glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ModelManage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TexureManage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
       <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelManage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TexureManage.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -41,6 +59,18 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shaders\sincolor.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\position3d.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\position3d.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\texure.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\texure.vs">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

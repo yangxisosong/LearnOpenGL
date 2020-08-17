@@ -8,11 +8,10 @@ Camera::Camera()
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	//相机 上方向
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	cameraRight = glm::normalize(glm::cross(this->cameraFront, this->WorldUp));
-
+	//世界坐标上
 	WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+	//相机右向
+	cameraRight = glm::normalize(glm::cross(this->cameraFront, this->WorldUp));
 }
 
 // Returns the view matrix calculated using Eular Angles and the LookAt Matrix

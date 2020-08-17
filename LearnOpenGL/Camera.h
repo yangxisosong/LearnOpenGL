@@ -56,5 +56,7 @@ public:
 
 private: 
 	void updateCameraVectors();
+
+	float MoveSpeed = 1.0f;
 };
 
