@@ -8,7 +8,6 @@ class TexureManage
 public:
 	TexureManage();
 
-	GLuint LoadTexure(std::string imgpath);
-
+	GLuint LoadTexure(std::string imgpath, GLuint rgb, GLenum rgba, int param);
 };
 

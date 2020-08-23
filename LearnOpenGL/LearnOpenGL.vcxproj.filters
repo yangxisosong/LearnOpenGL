@@ -33,6 +33,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -45,6 +48,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="TexureManage.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,6 +89,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shaders\light.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\material.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\material.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

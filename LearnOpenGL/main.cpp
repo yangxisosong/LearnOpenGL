@@ -21,6 +21,7 @@
 // Other Libs
 #include <SOIL.h>
 #include "TexureManage.h"
+#include "Material.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -188,6 +189,51 @@ GLfloat verticesnormal[] = {
 	   -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
 	   -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
+
+GLfloat verticesnormalandtexure[] = {
+	// Positions          // Normals           // Texture Coords
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+};
 #pragma endregion
 
 struct MouseDown
@@ -196,6 +242,7 @@ struct MouseDown
 	bool Middle;
 	bool Right;
 };
+
 MouseDown mouseState{ false,false,false };
 
 int main()
@@ -240,8 +287,14 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	// 加载和编译我们的着色器
-	Shader ourShader("./shaders/defaultlight.vs", "./shaders/defaultlight.frag");
+	Shader ourShader("./shaders/material.vs", "./shaders/material.frag");
 	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
+
+	Material* myMaterial = new Material(&ourShader,
+		glm::vec3(0.2f, 0.2f, 0.2f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		32.0f);
 
 	GLuint VBO, VAO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -251,17 +304,21 @@ int main()
 	//glGenBuffers(1, &EBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesnormal), verticesnormal, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesnormalandtexure), verticesnormalandtexure, GL_STATIC_DRAW);
 
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	// TexCoord attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	// normal attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
+	//texure
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
+
 	glBindVertexArray(0); // Unbind VAO
 
 	GLuint lightVAO, lightVBO;
@@ -282,8 +339,8 @@ int main()
 	GLuint texture1;
 	GLuint texture2;
 	TexureManage texureMange;
-	texture1=texureMange.LoadTexure("./include/wall.jpg");
-	texture2 = texureMange.LoadTexure("./include/awesomeface.png");
+	texture1 = texureMange.LoadTexure("./include/container2.png", GL_RGB, GL_RGB, 0);
+	texture2 = texureMange.LoadTexure("./include/container2_specular.png", GL_RGB, GL_RGB, 1);
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(window))
@@ -307,20 +364,50 @@ int main()
 		// 绑定贴图
 	/*	glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture1"), 0);
+		glUniform1i(glGetUniformLocation(ourShader.Program, "material.diffusetexure"), 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);*/
+		glUniform1i(glGetUniformLocation(ourShader.Program, "material.speculartexure"), 1);
+		myMaterial->SetTexure(texture1,texture2);*/
 
 		GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
 		GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
-		GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
+		//GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
 		GLint viewPosLoc = glGetUniformLocation(ourShader.Program, "viewPos");
-		
-		glUniform3f(lightPosLoc, 1.2f, 1.0f, 2.0f);
-		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);// 我们所熟悉的珊瑚红
+		//GLint materialPosLoc = glGetUniformLocation(ourShader.Program, "material");
+
+		//glUniform3f(lightPosLoc, 1.2f, 1.0f, 2.0f);
+		glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);// 我们所熟悉的珊瑚红
 		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f); // 依旧把光源设置为白色
 		glUniform3f(viewPosLoc, camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z);
+
+		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.ambient"), 1.0f, 0.5f, 0.31f);
+		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.diffuse"), 0.0f, 0.5f, 0.31f);
+		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.specular"), 0.5f, 0.5f, 0.5f);
+		//glUniform1f(glGetUniformLocation(ourShader.Program, "material.shininess"), 32.0f);
+		ourShader.SetUniform3f("material.ambient", myMaterial->ambient);
+		ourShader.SetUniform3f("material.diffuse", myMaterial->diffuse);
+		ourShader.SetUniform3f("material.specular", myMaterial->specular);
+		ourShader.SetUniform1f("material.shininess", myMaterial->shininess);
+		ourShader.SetUniformTexure("material.diffuse", 0);
+		ourShader.SetUniformTexure("material.specular", 1);
+
+
+		//颜色变化效果
+		//glm::vec3 lightColor;
+		//lightColor.x = sin(glfwGetTime() * 2.0f);
+		//lightColor.y = sin(glfwGetTime() * 0.7f);
+		//lightColor.z = sin(glfwGetTime() * 1.3f);
+		//glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // Decrease the influence
+		//glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // Low influence
+		//ourShader.SetUniform3f("light.ambient", ambientColor);
+		//ourShader.SetUniform3f("light.diffuse", diffuseColor);
+
+		ourShader.SetUniform3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		ourShader.SetUniform3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		ourShader.SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		ourShader.SetUniform3f("light.position", glm::vec3(1.2f, 1.0f, 2.0f));
+
 		// mvp 矩阵计算
 		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		glm::mat4 view = camera.GetViewMatrix();

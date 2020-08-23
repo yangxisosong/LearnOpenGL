@@ -8,6 +8,9 @@
 #include <iostream>
 #include <GL/glew.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 /**
  * 从硬盘读取着色器，然后编译并链接，并对它们进行错误检测
  */
@@ -95,6 +98,22 @@ public:
 	void Use()
 	{
 		glUseProgram(this->Program);
+	}
+
+
+	void SetUniform3f(const char* name,glm::vec3 param) 
+	{
+		glUniform3f(glGetUniformLocation(Program, name), param.x, param.y, param.z);
+	}
+
+	void SetUniform1f(const char* name, float param)
+	{
+		glUniform1f(glGetUniformLocation(Program, name), param);
+	}
+
+	void SetUniformTexure(const char* name,int solt)
+	{
+		glUniform1i(glGetUniformLocation(Program, name), solt);
 	}
 };
 

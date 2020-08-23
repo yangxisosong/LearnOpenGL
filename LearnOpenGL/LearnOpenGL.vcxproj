@@ -152,11 +152,13 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelManage.cpp" />
     <ClCompile Include="TexureManage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="ModelManage.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="TexureManage.h" />
@@ -168,6 +170,8 @@
     <None Include="shaders\defaultlight.vs" />
     <None Include="shaders\light.frag" />
     <None Include="shaders\light.vs" />
+    <None Include="shaders\material.frag" />
+    <None Include="shaders\material.vs" />
     <None Include="shaders\position3d.frag" />
     <None Include="shaders\position3d.vs" />
     <None Include="shaders\sincolor.frag" />
