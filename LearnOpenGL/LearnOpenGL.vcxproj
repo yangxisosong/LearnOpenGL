@@ -179,6 +179,10 @@
     <None Include="shaders\texure.frag" />
     <None Include="shaders\texure.vs" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="include\container2.png" />
+    <Image Include="include\container2_specular.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

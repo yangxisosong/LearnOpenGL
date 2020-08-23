@@ -362,13 +362,20 @@ int main()
 		ourShader.Use();
 
 		// 绑定贴图
-	/*	glActiveTexture(GL_TEXTURE0);
+		/*glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glUniform1i(glGetUniformLocation(ourShader.Program, "material.diffusetexure"), 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "material.speculartexure"), 1);
-		myMaterial->SetTexure(texture1,texture2);*/
+		glUniform1i(glGetUniformLocation(ourShader.Program, "material.speculartexure"), 1);*/
+		//myMaterial->SetTexure(texture1, texture2);
+
+		// Bind diffuse map
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, texture1);
+		//// Bind specular map
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, texture2);
 
 		GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
 		GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
@@ -389,8 +396,8 @@ int main()
 		ourShader.SetUniform3f("material.diffuse", myMaterial->diffuse);
 		ourShader.SetUniform3f("material.specular", myMaterial->specular);
 		ourShader.SetUniform1f("material.shininess", myMaterial->shininess);
-		ourShader.SetUniformTexure("material.diffuse", 0);
-		ourShader.SetUniformTexure("material.specular", 1);
+		ourShader.SetUniformTexure("material.diffusetexure", 0);
+		ourShader.SetUniformTexure("material.speculartexure", 1);
 
 
 		//颜色变化效果

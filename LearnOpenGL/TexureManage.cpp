@@ -21,7 +21,7 @@ GLuint TexureManage::LoadTexure(std::string imgpath, GLuint rgb, GLenum rgba, in
 	unsigned char* image = SOIL_load_image(imgpath.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 	if (image)
 	{
-		glTexImage2D(GL_TEXTURE_2D, 0, rgb, width, height, param, rgba, GL_UNSIGNED_BYTE, image);
+		glTexImage2D(GL_TEXTURE_2D, 0, rgb, width, height, 0, rgba, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
@@ -30,6 +30,6 @@ GLuint TexureManage::LoadTexure(std::string imgpath, GLuint rgb, GLenum rgba, in
 	}
 
 	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0 + param); // Unbind texture when done, so we won't accidentily mess up our texture.
+	//glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
 	return texture;
 }

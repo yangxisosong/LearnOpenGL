@@ -98,4 +98,12 @@
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="include\container2.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="include\container2_specular.png">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
