@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 // GL Includes
-#include <GL/glew.h>
+//#include <GL/glew.h>
+#include <glad/glad.h>
 
 //定义相机移动几种可能的选择。作为抽象的窗口系统特定的输入法走就走
 enum class Camera_Movement {

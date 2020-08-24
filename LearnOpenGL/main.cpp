@@ -3,11 +3,13 @@
 #include <windows.h> 
 
 // GLEW
-#define GLEW_STATIC
-#include <GL/glew.h>
+//#define GLEW_STATIC
+//#include <GL/glew.h>
 
 // GLFW
 #include <GLFW/glfw3.h>
+
+#include <glad/glad.h>
 
 // GL includes
 #include "Shader.h"
@@ -22,6 +24,7 @@
 #include <SOIL.h>
 #include "TexureManage.h"
 #include "Material.h"
+#include "Light.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -44,6 +47,11 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+//Light
+ParallelLight parallelLight = ParallelLight(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(-45.0f), 0, 0));
+
+PointLight pointLight = PointLight(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(-45.0f), 0, 0));
 
 #pragma region PositionDate 
 // Set up vertex data (and buffer(s)) and attribute pointers
@@ -275,9 +283,17 @@ int main()
 	// Options 是否显示鼠标指针
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	// glad: load all OpenGL function pointers
+	// ---------------------------------------
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
 	// 初始化GLEW 设置OpenGL函数指针。
-	glewExperimental = GL_TRUE;
-	glewInit();
+	/*glewExperimental = GL_TRUE;
+	glewInit();*/
 
 	// 定义视口尺寸
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -355,7 +371,7 @@ int main()
 		Do_Movement();
 
 		// 清除colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Draw our first triangle
@@ -385,7 +401,7 @@ int main()
 
 		//glUniform3f(lightPosLoc, 1.2f, 1.0f, 2.0f);
 		glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);// 我们所熟悉的珊瑚红
-		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f); // 依旧把光源设置为白色
+		glUniform3f(lightColorLoc, parallelLight.color.x, parallelLight.color.y, parallelLight.color.z); // 依旧把光源设置为白色
 		glUniform3f(viewPosLoc, camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z);
 
 		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.ambient"), 1.0f, 0.5f, 0.31f);
@@ -410,10 +426,15 @@ int main()
 		//ourShader.SetUniform3f("light.ambient", ambientColor);
 		//ourShader.SetUniform3f("light.diffuse", diffuseColor);
 
-		ourShader.SetUniform3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		ourShader.SetUniform3f("light.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
 		ourShader.SetUniform3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 		ourShader.SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		ourShader.SetUniform3f("light.position", glm::vec3(1.2f, 1.0f, 2.0f));
+		ourShader.SetUniform3f("light.position", glm::vec3(parallelLight.position.x, parallelLight.position.y, parallelLight.position.z));
+		ourShader.SetUniform3f("light.lightDir", glm::vec3(parallelLight.direction.x, parallelLight.direction.y, parallelLight.direction.z));
+
+		ourShader.SetUniform1f("light.constant", pointLight.constant);
+		ourShader.SetUniform1f("light.linear", pointLight.linear);
+		ourShader.SetUniform1f("light.quadratic", pointLight.quadratic);
 
 		// mvp 矩阵计算
 		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -433,7 +454,7 @@ int main()
 
 		// render container
 		glBindVertexArray(VAO);
-		for (GLuint i = 0; i < 1; i++)
+		for (GLuint i = 0; i < 10; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);

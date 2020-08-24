@@ -25,6 +25,11 @@ struct Light
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+    vec3 lightDir;
+
+    float constant;
+	float linear;
+	float quadratic;
 };
 uniform Light light;
 
@@ -43,7 +48,12 @@ void main()
     // 漫反射（光照和法线计算漫反射）
     vec3 norm = normalize(Normal);
     //入射光线
-    vec3 lightDir = normalize(light.position - FragPos);
+    vec3 lightDir = normalize(light.position - FragPos);//-light.lightDir;
+
+    //点光源
+    float dist=length(light.position - FragPos);
+    float attenuation = 1.0/(light.constant+light.linear*dist+light.quadratic*(dist*dist));
+
     float diff = max(dot(norm, lightDir), 0.0);
     //vec3 diffuse = (diff * material.diffuse) * light.diffuse;
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffusetexure, TexCoord));
@@ -59,5 +69,6 @@ void main()
     //vec3 result = (ambient + diffuse + specular) * objectColor;
     //vec3 result = (ambient + diffuse) * objectColor;
 
-    color = vec4(ambient + diffuse + specular, 1.0f); 
+    //color = vec4(ambient + diffuse + specular, 1.0f); 
+    color = vec4(ambient + (diffuse + specular)*attenuation, 1.0f);
 }
