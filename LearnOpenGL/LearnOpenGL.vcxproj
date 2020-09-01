@@ -152,6 +152,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightSpot.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelManage.cpp" />
@@ -160,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightSpot.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModelManage.h" />
     <ClInclude Include="Shader.h" />
@@ -184,6 +186,9 @@
   <ItemGroup>
     <Image Include="include\container2.png" />
     <Image Include="include\container2_specular.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="材质.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

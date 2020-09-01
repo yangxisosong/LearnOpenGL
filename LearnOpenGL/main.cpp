@@ -25,6 +25,7 @@
 #include "TexureManage.h"
 #include "Material.h"
 #include "Light.h"
+#include "LightSpot.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -49,9 +50,11 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 //Light
-ParallelLight parallelLight = ParallelLight(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(-45.0f), 0, 0));
+ParallelLight parallelLight = ParallelLight(glm::vec3(0.2f, 0.0f, 3.0f), glm::vec3(glm::radians(90.0f), 0, 0));
 
-PointLight pointLight = PointLight(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(-45.0f), 0, 0));
+PointLight pointLight = PointLight(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(90.0f), 0, 0));
+
+LightSpot SpotLight = LightSpot(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(glm::radians(-45.0f), 0, 0));
 
 #pragma region PositionDate 
 // Set up vertex data (and buffer(s)) and attribute pointers
@@ -242,6 +245,14 @@ GLfloat verticesnormalandtexure[] = {
 	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
+
+// Positions of the point lights
+glm::vec3 pointLightPositions[] = {
+	glm::vec3(0.7f,  0.2f,  2.0f),
+	glm::vec3(2.3f, -3.3f, -4.0f),
+	glm::vec3(-4.0f,  2.0f, -12.0f),
+	glm::vec3(0.0f,  0.0f, -3.0f)
+};
 #pragma endregion
 
 struct MouseDown
@@ -393,27 +404,44 @@ int main()
 		//glActiveTexture(GL_TEXTURE1);
 		//glBindTexture(GL_TEXTURE_2D, texture2);
 
-		GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
-		GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
+		//GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
+		//GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
 		//GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
 		GLint viewPosLoc = glGetUniformLocation(ourShader.Program, "viewPos");
 		//GLint materialPosLoc = glGetUniformLocation(ourShader.Program, "material");
 
 		//glUniform3f(lightPosLoc, 1.2f, 1.0f, 2.0f);
-		glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);// 我们所熟悉的珊瑚红
-		glUniform3f(lightColorLoc, parallelLight.color.x, parallelLight.color.y, parallelLight.color.z); // 依旧把光源设置为白色
+		//glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);// 我们所熟悉的珊瑚红
+		//glUniform3f(lightColorLoc, parallelLight.color.x, parallelLight.color.y, parallelLight.color.z); // 依旧把光源设置为白色
 		glUniform3f(viewPosLoc, camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z);
 
 		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.ambient"), 1.0f, 0.5f, 0.31f);
 		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.diffuse"), 0.0f, 0.5f, 0.31f);
 		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.specular"), 0.5f, 0.5f, 0.5f);
 		//glUniform1f(glGetUniformLocation(ourShader.Program, "material.shininess"), 32.0f);
-		ourShader.SetUniform3f("material.ambient", myMaterial->ambient);
-		ourShader.SetUniform3f("material.diffuse", myMaterial->diffuse);
-		ourShader.SetUniform3f("material.specular", myMaterial->specular);
+		//ourShader.SetUniform3f("material.ambient", myMaterial->ambient);
+		//ourShader.SetUniform3f("material.diffuse", myMaterial->diffuse);
+		//ourShader.SetUniform3f("material.specular", myMaterial->specular);
 		ourShader.SetUniform1f("material.shininess", myMaterial->shininess);
-		ourShader.SetUniformTexure("material.diffusetexure", 0);
-		ourShader.SetUniformTexure("material.speculartexure", 1);
+		ourShader.SetUniformTexure("material.diffuse", 0);
+		ourShader.SetUniformTexure("material.specular", 1);
+
+
+		ourShader.SetUniform3f("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+		ourShader.SetUniform3f("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		ourShader.SetUniform3f("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+		ourShader.SetUniform3f("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	
+		for (int i = 0; i < 4; i++) {
+			std::string index = "pointLights["+std::to_string(i)+ "].";
+			ourShader.SetUniform3f((index + "position").c_str(), glm::vec3(pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z));
+			ourShader.SetUniform3f((index + "ambient").c_str(), glm::vec3(0.05f, 0.05f, 0.05f));
+			ourShader.SetUniform3f((index + "diffuse").c_str(), glm::vec3(0.8f, 0.8f, 0.8f));
+			ourShader.SetUniform3f((index + "specular").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
+			ourShader.SetUniform1f((index + "constant").c_str(), 1.0f);
+			ourShader.SetUniform1f((index + "linear").c_str(), 0.09f);
+			ourShader.SetUniform1f((index + "quadratic").c_str(), 0.032f);
+		}
 
 
 		//颜色变化效果
@@ -426,15 +454,17 @@ int main()
 		//ourShader.SetUniform3f("light.ambient", ambientColor);
 		//ourShader.SetUniform3f("light.diffuse", diffuseColor);
 
-		ourShader.SetUniform3f("light.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
-		ourShader.SetUniform3f("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+		/*ourShader.SetUniform3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		ourShader.SetUniform3f("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
 		ourShader.SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 		ourShader.SetUniform3f("light.position", glm::vec3(parallelLight.position.x, parallelLight.position.y, parallelLight.position.z));
 		ourShader.SetUniform3f("light.lightDir", glm::vec3(parallelLight.direction.x, parallelLight.direction.y, parallelLight.direction.z));
 
+
+		ourShader.SetUniform1f("light.cosPhy", SpotLight.cosPhy);
 		ourShader.SetUniform1f("light.constant", pointLight.constant);
 		ourShader.SetUniform1f("light.linear", pointLight.linear);
-		ourShader.SetUniform1f("light.quadratic", pointLight.quadratic);
+		ourShader.SetUniform1f("light.quadratic", pointLight.quadratic);*/
 
 		// mvp 矩阵计算
 		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -483,11 +513,14 @@ int main()
 
 		// Draw the container (using container's vertex attributes)
 		glBindVertexArray(lightVAO);
-		glm::mat4 lightmodel = glm::mat4(1.0f);
-		lightmodel = glm::translate(lightmodel, glm::vec3(1.2f, 1.0f, 2.0f));
-		lightmodel = glm::scale(lightmodel, glm::vec3(0.2f));
-		glUniformMatrix4fv(LightmodelLoc, 1, GL_FALSE, glm::value_ptr(lightmodel));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (GLuint i = 0; i < 4; i++)
+		{
+			glm::mat4 lightmodel = glm::mat4(1.0f);
+			lightmodel = glm::translate(lightmodel, pointLightPositions[i]);
+			lightmodel = glm::scale(lightmodel, glm::vec3(0.2f)); // Make it a smaller cube
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(lightmodel));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 		glBindVertexArray(0);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
