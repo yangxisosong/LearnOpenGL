@@ -26,6 +26,7 @@
 #include "Material.h"
 #include "Light.h"
 #include "LightSpot.h"
+#include "Mesh.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -264,6 +265,8 @@ struct MouseDown
 
 MouseDown mouseState{ false,false,false };
 
+
+
 int main()
 {
 	// 初始化glfw
@@ -313,6 +316,7 @@ int main()
 	//开启深度检测
 	glEnable(GL_DEPTH_TEST);
 
+	Mesh cube(verticesnormalandtexure);
 	// 加载和编译我们的着色器
 	Shader ourShader("./shaders/material.vs", "./shaders/material.frag");
 	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
@@ -323,30 +327,30 @@ int main()
 		glm::vec3(1.0f, 1.0f, 1.0f),
 		32.0f);
 
-	GLuint VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	//GLuint VBO, VAO, EBO;
+	//glGenVertexArrays(1, &VAO);
+	//glGenBuffers(1, &VBO);
 
-	glBindVertexArray(VAO);
-	//glGenBuffers(1, &EBO);
+	//glBindVertexArray(VAO);
+	////glGenBuffers(1, &EBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesnormalandtexure), verticesnormalandtexure, GL_STATIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesnormalandtexure), verticesnormalandtexure, GL_STATIC_DRAW);
 
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	// normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	//texure
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	//glEnableVertexAttribArray(0);
+	//// normal attribute
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	//glEnableVertexAttribArray(1);
+	////texure
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	//glEnableVertexAttribArray(2);
 
-	glBindVertexArray(0); // Unbind VAO
+	//glBindVertexArray(0); // Unbind VAO
 
 	GLuint lightVAO, lightVBO;
 	glGenVertexArrays(1, &lightVAO);
@@ -388,43 +392,12 @@ int main()
 		// Draw our first triangle
 		ourShader.Use();
 
-		// 绑定贴图
-		/*glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "material.diffusetexure"), 0);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(ourShader.Program, "material.speculartexure"), 1);*/
-		//myMaterial->SetTexure(texture1, texture2);
-
-		// Bind diffuse map
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, texture1);
-		//// Bind specular map
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, texture2);
-
-		//GLint objectColorLoc = glGetUniformLocation(ourShader.Program, "objectColor");
-		//GLint lightColorLoc = glGetUniformLocation(ourShader.Program, "lightColor");
-		//GLint lightPosLoc = glGetUniformLocation(ourShader.Program, "lightPos");
 		GLint viewPosLoc = glGetUniformLocation(ourShader.Program, "viewPos");
-		//GLint materialPosLoc = glGetUniformLocation(ourShader.Program, "material");
-
-		//glUniform3f(lightPosLoc, 1.2f, 1.0f, 2.0f);
-		//glUniform3f(objectColorLoc, 1.0f, 1.0f, 1.0f);// 我们所熟悉的珊瑚红
-		//glUniform3f(lightColorLoc, parallelLight.color.x, parallelLight.color.y, parallelLight.color.z); // 依旧把光源设置为白色
 		glUniform3f(viewPosLoc, camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z);
 
-		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.ambient"), 1.0f, 0.5f, 0.31f);
-		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.diffuse"), 0.0f, 0.5f, 0.31f);
-		//glUniform3f(glGetUniformLocation(ourShader.Program, "material.specular"), 0.5f, 0.5f, 0.5f);
-		//glUniform1f(glGetUniformLocation(ourShader.Program, "material.shininess"), 32.0f);
-		//ourShader.SetUniform3f("material.ambient", myMaterial->ambient);
-		//ourShader.SetUniform3f("material.diffuse", myMaterial->diffuse);
-		//ourShader.SetUniform3f("material.specular", myMaterial->specular);
 		ourShader.SetUniform1f("material.shininess", myMaterial->shininess);
-		ourShader.SetUniformTexure("material.diffuse", 0);
-		ourShader.SetUniformTexure("material.specular", 1);
+		//ourShader.SetUniformTexure("material.diffuse", 0);
+		//ourShader.SetUniformTexure("material.specular", 1);
 
 
 		ourShader.SetUniform3f("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -443,28 +416,17 @@ int main()
 			ourShader.SetUniform1f((index + "quadratic").c_str(), 0.032f);
 		}
 
-
-		//颜色变化效果
-		//glm::vec3 lightColor;
-		//lightColor.x = sin(glfwGetTime() * 2.0f);
-		//lightColor.y = sin(glfwGetTime() * 0.7f);
-		//lightColor.z = sin(glfwGetTime() * 1.3f);
-		//glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // Decrease the influence
-		//glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // Low influence
-		//ourShader.SetUniform3f("light.ambient", ambientColor);
-		//ourShader.SetUniform3f("light.diffuse", diffuseColor);
-
-		/*ourShader.SetUniform3f("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		ourShader.SetUniform3f("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-		ourShader.SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-		ourShader.SetUniform3f("light.position", glm::vec3(parallelLight.position.x, parallelLight.position.y, parallelLight.position.z));
-		ourShader.SetUniform3f("light.lightDir", glm::vec3(parallelLight.direction.x, parallelLight.direction.y, parallelLight.direction.z));
-
-
-		ourShader.SetUniform1f("light.cosPhy", SpotLight.cosPhy);
-		ourShader.SetUniform1f("light.constant", pointLight.constant);
-		ourShader.SetUniform1f("light.linear", pointLight.linear);
-		ourShader.SetUniform1f("light.quadratic", pointLight.quadratic);*/
+		// SpotLight
+		ourShader.SetUniform3f("spotLight.position", glm::vec3(camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z));
+		ourShader.SetUniform3f("spotLight.direction", glm::vec3(camera.cameraFront.x, camera.cameraFront.y, camera.cameraFront.z));
+		ourShader.SetUniform3f("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+		ourShader.SetUniform3f("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f)); 
+		ourShader.SetUniform3f("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		ourShader.SetUniform1f("spotLight.constant", 1.0f);
+		ourShader.SetUniform1f("spotLight.linear", 0.09);
+		ourShader.SetUniform1f("spotLight.quadratic", 0.032);
+		ourShader.SetUniform1f("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		ourShader.SetUniform1f("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		// mvp 矩阵计算
 		//glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -482,20 +444,21 @@ int main()
 		// Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+		
 		// render container
-		glBindVertexArray(VAO);
-		for (GLuint i = 0; i < 10; i++)
+		//glBindVertexArray(VAO);
+		for (GLuint i = 0; i < 1; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
+			//model = glm::translate(model, cubePositions[i]);
 			GLfloat angle = 20.0f * i;
 			//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			cube.Drow(&ourShader);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
-		glBindVertexArray(0);
+		//glBindVertexArray(0);
 
 
 		lightingShader.Use();
@@ -528,9 +491,9 @@ int main()
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	//取消分配所有资源
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	////取消分配所有资源
+	//glDeleteVertexArrays(1, &VAO);
+	//glDeleteBuffers(1, &VBO);
 
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &lightVBO);
