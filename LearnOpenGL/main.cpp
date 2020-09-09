@@ -27,6 +27,7 @@
 #include "Light.h"
 #include "LightSpot.h"
 #include "Mesh.h"
+#include "Model.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -316,10 +317,12 @@ int main()
 	//开启深度检测
 	glEnable(GL_DEPTH_TEST);
 
-	Mesh cube(verticesnormalandtexure);
+	//Mesh cube(verticesnormalandtexure);
 	// 加载和编译我们的着色器
 	Shader ourShader("./shaders/material.vs", "./shaders/material.frag");
 	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
+
+	Model ourModel("./include/fengche/test.obj");
 
 	Material* myMaterial = new Material(&ourShader,
 		glm::vec3(0.2f, 0.2f, 0.2f),
@@ -407,7 +410,7 @@ int main()
 	
 		for (int i = 0; i < 4; i++) {
 			std::string index = "pointLights["+std::to_string(i)+ "].";
-			ourShader.SetUniform3f((index + "position").c_str(), glm::vec3(pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z));
+			ourShader.SetUniform3f((index + "position").c_str(), glm::vec3(pointLightPositions[i].x, pointLightPositions[i].y, pointLightPositions[i].z));
 			ourShader.SetUniform3f((index + "ambient").c_str(), glm::vec3(0.05f, 0.05f, 0.05f));
 			ourShader.SetUniform3f((index + "diffuse").c_str(), glm::vec3(0.8f, 0.8f, 0.8f));
 			ourShader.SetUniform3f((index + "specular").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
@@ -444,18 +447,19 @@ int main()
 		// Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+
 		
 		// render container
 		//glBindVertexArray(VAO);
-		for (GLuint i = 0; i < 1; i++)
+		for (GLuint i = 0; i < 0; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
-			//model = glm::translate(model, cubePositions[i]);
+			model = glm::translate(model, cubePositions[i]);
 			GLfloat angle = 20.0f * i;
-			//model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-			cube.Drow(&ourShader);
+			//cube.Draw(&ourShader);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 		//glBindVertexArray(0);
@@ -463,6 +467,12 @@ int main()
 
 		lightingShader.Use();
 	
+		// Draw the loaded model
+		glm::mat4 model;
+		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// It's a bit too big for our scene, so scale it down
+		glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
+		ourModel.Draw(&lightingShader);
 
 		glm::mat4 lightview = camera.GetViewMatrix();
 		glm::mat4 lightprojection = glm::mat4(1.0f);

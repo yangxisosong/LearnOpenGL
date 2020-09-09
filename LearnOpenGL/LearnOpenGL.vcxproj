@@ -156,6 +156,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelManage.cpp" />
     <ClCompile Include="TexureManage.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="LightSpot.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="ModelManage.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />

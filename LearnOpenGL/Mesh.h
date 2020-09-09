@@ -10,11 +10,11 @@ struct Vertex
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
-	glm::vec3 TexCorrds;
+	glm::vec2 TexCorrds;
 
 };
 //纹理
-struct Texure
+struct Texture
 {
 	unsigned int id;
 	std::string type;
@@ -26,15 +26,15 @@ class Mesh
 {
 public:
 	Mesh(float vertices[]);
-	Mesh(std::vector<Vertex> victices, std::vector<unsigned int> indices, std::vector<Texure> textures);
+	Mesh(std::vector<Vertex> victices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
 public:
 	//网格数据
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texure> textures;
+	std::vector<Texture> textures;
 
-	void Drow(Shader* shader);
+	void Draw(Shader* shader);
 
 private: 
 	GLuint VBO, VAO, EBO;
