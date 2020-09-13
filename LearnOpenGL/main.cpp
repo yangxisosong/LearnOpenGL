@@ -28,6 +28,7 @@
 #include "LightSpot.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "testmodel.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -248,6 +249,18 @@ GLfloat verticesnormalandtexure[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
+GLfloat verticesaa[] = {
+	0.5f, 0.5f, 0.0f,   // 右上角
+	0.5f, -0.5f, 0.0f,  // 右下角
+	-0.5f, -0.5f, 0.0f, // 左下角
+	-0.5f, 0.5f, 0.0f   // 左上角
+};
+
+GLuint indicesaa[] = { // 注意索引从0开始! 
+	0, 1, 3, // 第一个三角形
+	1, 2, 3  // 第二个三角形
+};
+
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
 	glm::vec3(0.7f,  0.2f,  2.0f),
@@ -316,13 +329,14 @@ int main()
 	// 设置一些OpenGL的选项
 	//开启深度检测
 	glEnable(GL_DEPTH_TEST);
-
-	//Mesh cube(verticesnormalandtexure);
+	// 开启线框模式.
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//Mesh cube(verticesaa);
 	// 加载和编译我们的着色器
 	Shader ourShader("./shaders/material.vs", "./shaders/material.frag");
 	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
-
-	Model ourModel("./include/fengche/test.obj");
+	Model ourModel("D:\\work\\work_code\\OpenGlsource\\backpack.obj");
+	Shader positintest("./shaders/positiondefault.vs", "./shaders/positiondefault.frag");
 
 	Material* myMaterial = new Material(&ourShader,
 		glm::vec3(0.2f, 0.2f, 0.2f),
@@ -330,6 +344,28 @@ int main()
 		glm::vec3(1.0f, 1.0f, 1.0f),
 		32.0f);
 
+	vector<float> vecv(verticesaa, verticesaa + sizeof(verticesaa) / sizeof(float));
+	vector<int> veci(indicesaa, indicesaa + sizeof(indicesaa) / sizeof(int));
+	Mesh a(vecv, veci);
+
+	//unsigned int VBO, VAO, EBO;
+	//glGenVertexArrays(1, &VAO);
+	//glGenBuffers(1, &VBO);
+	//glGenBuffers(1, &EBO);
+	////首先绑定顶点数组对象，然后绑定并设置顶点缓冲区，然后配置顶点属性。
+	//glBindVertexArray(VAO);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(verticesaa), verticesaa, GL_STATIC_DRAW);
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesaa), indicesaa, GL_STATIC_DRAW);
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0);
+
+	//// 请注意，这是允许的，对glVertexAttribPointer的调用将VBO注册为顶点属性的绑定顶点缓冲区对象，因此之后我们可以安全地解除绑定
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//GLuint VBO, VAO, EBO;
 	//glGenVertexArrays(1, &VAO);
 	//glGenBuffers(1, &VBO);
@@ -389,7 +425,7 @@ int main()
 		Do_Movement();
 
 		// 清除colorbuffer
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Draw our first triangle
@@ -399,8 +435,8 @@ int main()
 		glUniform3f(viewPosLoc, camera.cameraPos.x, camera.cameraPos.y, camera.cameraPos.z);
 
 		ourShader.SetUniform1f("material.shininess", myMaterial->shininess);
-		//ourShader.SetUniformTexure("material.diffuse", 0);
-		//ourShader.SetUniformTexure("material.specular", 1);
+		ourShader.SetUniformTexure("material.diffuse", 0);
+		ourShader.SetUniformTexure("material.specular", 1);
 
 
 		ourShader.SetUniform3f("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
@@ -451,14 +487,16 @@ int main()
 		
 		// render container
 		//glBindVertexArray(VAO);
-		for (GLuint i = 0; i < 0; i++)
+		for (GLuint i = 0; i < 1; i++)
 		{
 			// Calculate the model matrix for each object and pass it to shader before drawing
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
-			GLfloat angle = 20.0f * i;
-			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
+			/*GLfloat angle = 20.0f * i;
+			model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));*/
+			model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			ourModel.Draw(&ourShader);
 			//cube.Draw(&ourShader);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
@@ -472,7 +510,8 @@ int main()
 		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		ourModel.Draw(&lightingShader);
+		//ourModel.Draw(&lightingShader);
+		
 
 		glm::mat4 lightview = camera.GetViewMatrix();
 		glm::mat4 lightprojection = glm::mat4(1.0f);
@@ -496,17 +535,46 @@ int main()
 		}
 		glBindVertexArray(0);
 
+	
+		// Create transformations
+		positintest.Use();
+		glm::mat4 modelplan = glm::mat4(1.0f);
+		glm::mat4 viewplan = camera.GetViewMatrix();
+		glm::mat4 projectionplan = glm::mat4(1.0f);
+		modelplan = glm::rotate(modelplan, 0.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		projectionplan = glm::perspective(camera.Zoom, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+		// Get their uniform location
+		GLint modelLocplan = glGetUniformLocation(positintest.Program, "model");
+		GLint viewLocplan = glGetUniformLocation(positintest.Program, "view");
+		GLint projLocplan = glGetUniformLocation(positintest.Program, "projection");
+		// Pass them to the shaders
+		glUniformMatrix4fv(modelLocplan, 1, GL_FALSE, glm::value_ptr(modelplan));
+		glUniformMatrix4fv(viewLocplan, 1, GL_FALSE, glm::value_ptr(viewplan));
+		// Note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+		glUniformMatrix4fv(projLocplan, 1, GL_FALSE, glm::value_ptr(projectionplan));
+		//a.Draw(&positintest);
+
+
+		//// 绘制三角形
+		//glUseProgram(positintest.Program);
+		//glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 	////取消分配所有资源
-	//glDeleteVertexArrays(1, &VAO);
-	//glDeleteBuffers(1, &VBO);
-
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &lightVBO);
+	/*glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);*/
+	//glDeleteProgram(shaderProgram);
+
+	//glDeleteVertexArrays(1, &lightVAO);
+	//glDeleteBuffers(1, &lightVBO);
 	glfwTerminate();
 	return 0;
 }

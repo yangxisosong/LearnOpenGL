@@ -82,10 +82,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
-			vertex.TexCorrds = vec;
+			vertex.TexCoords = vec;
 		}
 		else
-			vertex.TexCorrds = glm::vec2(0.0f, 0.0f);
+			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 		vertices.push_back(vertex);
 	}
 	// Now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.

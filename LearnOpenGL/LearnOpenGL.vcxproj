@@ -170,6 +170,8 @@
     <ClInclude Include="ModelManage.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="testmesh.h" />
+    <ClInclude Include="testmodel.h" />
     <ClInclude Include="TexureManage.h" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +186,8 @@
     <None Include="shaders\material.vs" />
     <None Include="shaders\position3d.frag" />
     <None Include="shaders\position3d.vs" />
+    <None Include="shaders\positiondefault.frag" />
+    <None Include="shaders\positiondefault.vs" />
     <None Include="shaders\sincolor.frag" />
     <None Include="shaders\sincolor.vs" />
     <None Include="shaders\texure.frag" />
