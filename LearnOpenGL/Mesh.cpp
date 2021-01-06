@@ -31,15 +31,15 @@ void Mesh::Draw(Shader* shader)
 	{
 		if (textures[i].type == "texture_diffuse")
 		{
-			glActiveTexture(GL_TEXTURE0+ textures[i].id);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+			glActiveTexture(GL_TEXTURE0+ textures[i].id-1);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id-1);
 			shader->SetUniformTexure("material.diffuse", 0);
 
 		}
 		else if (textures[i].type == "texture_specular")
 		{
-			glActiveTexture(GL_TEXTURE1+textures[i].id);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+			glActiveTexture(GL_TEXTURE0+textures[i].id-1);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id-1);
 			shader->SetUniformTexure("material.specular", 1);
 		}
 	}

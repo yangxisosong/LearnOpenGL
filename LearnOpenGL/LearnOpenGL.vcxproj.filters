@@ -33,9 +33,6 @@
     <ClCompile Include="Material.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="LightSpot.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -47,6 +44,9 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +86,9 @@
     <ClInclude Include="testmesh.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="FrameCount.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default.frag">
@@ -124,9 +127,6 @@
     <None Include="shaders\light.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\material.vs">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="shaders\material.frag">
       <Filter>Shader</Filter>
     </None>
@@ -135,6 +135,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="shaders\positiondefault.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\material.vert">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

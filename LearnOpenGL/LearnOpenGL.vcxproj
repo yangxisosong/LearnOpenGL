@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameCount.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightSpot.h" />
     <ClInclude Include="Material.h" />
@@ -183,7 +184,7 @@
     <None Include="shaders\light.frag" />
     <None Include="shaders\light.vs" />
     <None Include="shaders\material.frag" />
-    <None Include="shaders\material.vs" />
+    <None Include="shaders\material.vert" />
     <None Include="shaders\position3d.frag" />
     <None Include="shaders\position3d.vs" />
     <None Include="shaders\positiondefault.frag" />

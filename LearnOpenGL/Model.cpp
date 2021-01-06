@@ -26,7 +26,7 @@ void Model::LoadModel(std::string const& path)
 		return;
 	}
 	// 检索文件路径的目录路径
-	this->directory = path.substr(0, path.find_last_of('/'));
+	this->directory = path.substr(0, path.find_last_of('\\'));
 
 	// 递归处理ASSIMP的根节点
 	this->processNode(scene->mRootNode, scene);
@@ -120,7 +120,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 }
 
 // Checks all material textures of a given type and loads the textures if they're not loaded yet.
-	// The required info is returned as a Texture struct.
+// The required info is returned as a Texture struct.
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
 {
 	std::vector<Texture> textures;
@@ -129,11 +129,25 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 		aiString str;
 		mat->GetTexture(type, i, &str);
 		// Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-		Texture texture;
-		texture.id = TextureFromFile(str.C_Str(), this->directory);
-		texture.type = typeName;
-		texture.path = str.C_Str();
-		textures.push_back(texture);
+		GLboolean skip = false;
+		for (GLuint j = 0; j < textures_loaded.size(); j++)
+		{
+			if (std::strcmp(textures_loaded[j].path.c_str(), str.C_Str()) == 0)
+			{
+				textures.push_back(textures_loaded[j]);
+				skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
+				break;
+			}
+		}
+		if (!skip)
+		{   // If texture hasn't been loaded already, load it
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), this->directory);
+			texture.type = typeName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+			this->textures_loaded.push_back(texture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+		}
 	}
 	return textures;
 }
@@ -142,16 +156,22 @@ GLint Model::TextureFromFile(const char* path, std::string directory)
 {
 	//Generate texture ID and load texture data 
 	std::string filename = std::string(path);
-	filename = directory + '/' + filename;
+	filename = directory + '\\' + filename;
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 	int width, height;
 	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-	// Assign texture to ID
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	if (image)
+	{
+		// Assign texture to ID
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("image load failed");
+	}
 	// Parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

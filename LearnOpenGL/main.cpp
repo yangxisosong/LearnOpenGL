@@ -29,6 +29,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "testmodel.h"
+#include "./FrameCount.h"
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -331,11 +332,12 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	// 开启线框模式.
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//Mesh cube(verticesaa);
+	Mesh cube(verticesnormalandtexure);
 	// 加载和编译我们的着色器
-	Shader ourShader("./shaders/material.vs", "./shaders/material.frag");
+	Shader ourShader("./shaders/material.vert", "./shaders/material.frag");
 	Shader lightingShader("./shaders/light.vs", "./shaders/light.frag");
 	Model ourModel("D:\\work\\work_code\\OpenGlsource\\backpack.obj");
+	//Model ourModel("D:\\work\\work_code\\OpenGlsource\\cube.obj");
 	Shader positintest("./shaders/positiondefault.vs", "./shaders/positiondefault.frag");
 
 	Material* myMaterial = new Material(&ourShader,
@@ -409,8 +411,8 @@ int main()
 	GLuint texture1;
 	GLuint texture2;
 	TexureManage texureMange;
-	texture1 = texureMange.LoadTexure("./include/container2.png", GL_RGB, GL_RGB, 0);
-	texture2 = texureMange.LoadTexure("./include/container2_specular.png", GL_RGB, GL_RGB, 1);
+	//texture1 = texureMange.LoadTexure("./include/container2.png", GL_RGB, GL_RGB, 0);
+	//texture2 = texureMange.LoadTexure("./include/container2_specular.png", GL_RGB, GL_RGB, 1);
 
 	// 渲染循环
 	while (!glfwWindowShouldClose(window))
@@ -420,9 +422,11 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		CalculateFrameRate();
 		// 检查和执行事件
 		glfwPollEvents();
 		Do_Movement();
+
 
 		// 清除colorbuffer
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -441,10 +445,10 @@ int main()
 
 		ourShader.SetUniform3f("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
 		ourShader.SetUniform3f("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		ourShader.SetUniform3f("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+		ourShader.SetUniform3f("dirLight.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
 		ourShader.SetUniform3f("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 	
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 10; i++) {
 			std::string index = "pointLights["+std::to_string(i)+ "].";
 			ourShader.SetUniform3f((index + "position").c_str(), glm::vec3(pointLightPositions[i].x, pointLightPositions[i].y, pointLightPositions[i].z));
 			ourShader.SetUniform3f((index + "ambient").c_str(), glm::vec3(0.05f, 0.05f, 0.05f));
