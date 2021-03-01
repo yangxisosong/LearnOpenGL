@@ -2,6 +2,10 @@
 #include <string>
 #include <windows.h> 
 
+#include <ft2build.h>
+//#include <freetype/config/ftheader.h>
+#include FT_FREETYPE_H 
+
 // GLEW
 //#define GLEW_STATIC
 //#include <GL/glew.h>
@@ -30,6 +34,8 @@
 #include "Model.h"
 #include "testmodel.h"
 #include "./FrameCount.h"
+
+
 
 // Properties
 GLuint screenWidth = 800, screenHeight = 600;
@@ -284,6 +290,17 @@ MouseDown mouseState{ false,false,false };
 
 int main()
 {
+	// FreeType
+	FT_Library ft;
+	// All functions return a value different than 0 whenever an error occurred
+	if (FT_Init_FreeType(&ft))
+		std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+
+	// Load font as face
+	FT_Face face;
+	if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
+		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+
 	// ³õÊ¼»¯glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

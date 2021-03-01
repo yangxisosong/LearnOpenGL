@@ -89,6 +89,9 @@
     <ClInclude Include="FrameCount.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\default.frag">

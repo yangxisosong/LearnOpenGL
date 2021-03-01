@@ -1,0 +1,46 @@
+﻿  main.cpp
+D:\work\work_code\LearnOpenGL\LearnOpenGL\testmesh.h(79,1): warning C4267: “参数”: 从“size_t”转换到“GLsizei”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(431,24): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(479,50): warning C4305: “参数”: 从“double”到“float”截断
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(480,54): warning C4305: “参数”: 从“double”到“float”截断
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(421,9): warning C4101: “texture1”: 未引用的局部变量
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(422,9): warning C4101: “texture2”: 未引用的局部变量
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(667,12): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(668,12): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(672,19): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(673,19): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(675,11): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(676,11): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(684,12): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(685,12): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(690,19): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(691,19): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(693,11): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(694,11): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(707,28): warning C4244: “参数”: 从“double”转换到“GLfloat”，可能丢失数据
+D:\work\work_code\LearnOpenGL\LearnOpenGL\main.cpp(718,74): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+LINK : warning LNK4075: 忽略“/INCREMENTAL”(由于“/LTCG”规范)
+main.obj : error LNK2001: 无法解析的外部符号 glfwInit
+main.obj : error LNK2001: 无法解析的外部符号 glfwTerminate
+main.obj : error LNK2001: 无法解析的外部符号 glfwWindowHint
+main.obj : error LNK2001: 无法解析的外部符号 glfwCreateWindow
+main.obj : error LNK2001: 无法解析的外部符号 glfwWindowShouldClose
+main.obj : error LNK2001: 无法解析的外部符号 glfwSetWindowShouldClose
+main.obj : error LNK2001: 无法解析的外部符号 glfwPollEvents
+main.obj : error LNK2001: 无法解析的外部符号 glfwSetKeyCallback
+main.obj : error LNK2001: 无法解析的外部符号 glfwSetMouseButtonCallback
+main.obj : error LNK2001: 无法解析的外部符号 glfwSetCursorPosCallback
+main.obj : error LNK2001: 无法解析的外部符号 glfwSetScrollCallback
+main.obj : error LNK2001: 无法解析的外部符号 glfwGetTime
+main.obj : error LNK2001: 无法解析的外部符号 glfwMakeContextCurrent
+main.obj : error LNK2001: 无法解析的外部符号 glfwSwapBuffers
+main.obj : error LNK2001: 无法解析的外部符号 glfwGetProcAddress
+main.obj : error LNK2001: 无法解析的外部符号 SOIL_load_image
+Model.obj : error LNK2001: 无法解析的外部符号 SOIL_load_image
+TexureManage.obj : error LNK2001: 无法解析的外部符号 SOIL_load_image
+main.obj : error LNK2001: 无法解析的外部符号 SOIL_free_image_data
+Model.obj : error LNK2001: 无法解析的外部符号 SOIL_free_image_data
+TexureManage.obj : error LNK2001: 无法解析的外部符号 SOIL_free_image_data
+main.obj : error LNK2001: 无法解析的外部符号 FT_Init_FreeType
+main.obj : error LNK2001: 无法解析的外部符号 FT_New_Face
+D:\work\work_code\LearnOpenGL\x64\Debug\LearnOpenGL.exe : fatal error LNK1120: 19 个无法解析的外部命令
